@@ -1,29 +1,26 @@
 import { checkPlayer, loginPlayer, registerPlayer } from "../../api/login";
-
-
-// import { setPlayer } from "./playerSlice"; // Import Redux slice action
+import { loginStart, loginSuccess, loginFailure } from "../authSlice"
 
 export const googlePlayerSignIn = (userData) => async (dispatch) => {
+    dispatch(loginStart());  
     try {
-        // Check if the player exists
         const checkIfPlayer = await checkPlayer(userData.email);
 
         let playerData;
 
+        console.log(checkIfPlayer)
+
         if (checkIfPlayer.exists) {
-            // Log in the existing player
+            console.log("Player exists")
             playerData = await loginPlayer(checkIfPlayer.player);
         } else {
-            // Register the new player
+            console.log("Player does not exists")
             playerData = await registerPlayer(userData);
         }
+        dispatch(loginSuccess(playerData));
 
-        // Dispatch the player data to the Redux store
-        // dispatch(setPlayer(playerData));
-
-        return playerData;
     } catch (error) {
         console.error("Error in Google player sign-in:", error);
-        throw new Error("Google player sign-in failed");
+        dispatch(loginFailure(error.message || "Something went wrong"));
     }
 };

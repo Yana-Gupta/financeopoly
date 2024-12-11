@@ -1,14 +1,19 @@
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google"
+import { googlePlayerSignIn } from "../redux/actions/authAction"
+import { useDispatch, useSelector } from 'react-redux';
+
 
 const CLIENT_ID =
   "162458700878-a8e200u370isgaonemsl27pbcef20jdv.apps.googleusercontent.com"
 
 const Navbar = () => {
+  const dispatch = useDispatch();
+  const { player, loading, error, isAuthenticated } = useSelector((state) => state.auth);
+
   const handleSuccess = async (credentialResponse) => {
     const idToken = credentialResponse.credential;
     console.log(idToken)
     try {
-        // Verify and get user details from Google
         const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`);
         const user = await response.json();
     
@@ -19,15 +24,7 @@ const Navbar = () => {
           profilePic: user.picture,
         };
     
-        // Send the user data to your backend to create a user in Sanity
-        await fetch("/api/create-user", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(userData),
-        });
-    
+        dispatch(googlePlayerSignIn(userData)); 
         console.log("User logged in and saved successfully");
       } catch (error) {
         console.error("")
