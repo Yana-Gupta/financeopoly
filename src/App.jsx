@@ -1,21 +1,36 @@
-import './App.css'
+// src/components/Layout.jsx
+import React, { useEffect } from "react"
+import { useDispatch } from "react-redux"
 import Navbar from "./components/Navbar"
+import { fetchPlayerById } from "./redux/authSlice"
+import { Outlet } from "react-router-dom"
 
-import { Provider } from 'react-redux'
-import Store from "./redux/store.js"
+const Layout = ({ children }) => {
+  const dispatch = useDispatch()
 
-function App() {
+  useEffect(() => {
+    console.log("Hello")
+    dispatch(fetchPlayerById())
+  }, [dispatch])
 
   return (
-    <Provider store={Store}>
-      <div className='w-full'>
+    <div className="layout">
+      {/* Navbar */}
+      <div className="w-full">
         <Navbar />
       </div>
-      <div>
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Error nobis voluptatem deleniti repudiandae debitis ut earum nostrum, maxime dolorem quas? Vel perferendis ipsa, hic laborum explicabo cumque libero. Praesentium, nihil.
+
+      <div className="w-full h-[80vh]">
+        <Outlet />
       </div>
-    </Provider>
+
+      {/* Footer (optional, you can customize it further) */}
+
+      <footer>
+        <p>© 2024 My Game App</p>
+      </footer>
+    </div>
   )
 }
 
-export default App
+export default Layout
