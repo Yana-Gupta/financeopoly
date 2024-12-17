@@ -35,7 +35,7 @@ const Navbar = () => {
 
   const handleError = () => {}
   return (
-    <div className="h-28 w-full bg-cyan-700 flex flex-row text-center items-center justify-between px-12">
+    <div className="h-20 w-full bg-cyan-700 flex flex-row text-center items-center justify-between px-12">
       <div className="text-3xl font-bold">Financeopoly</div>
 
       <div className="flex flex-row gap-x-8 justify-between items-center">

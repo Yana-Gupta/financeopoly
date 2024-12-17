@@ -1,13 +1,28 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+const SANITY_API_TOKEN = "sk8oSSjaJahz6F2E93Gm2WVsqHEJubfdWT8YvAZQ2kLDLUFhHz3fHM6xaB8Q72BKmZxkPTSKE3Ec7RBDymlTI01XwKsBhatu8qnZTCcjWteUHJLQD1kos890V2cG76yFgKxcGwrXZeBVdo5e0XuLHRLclVHXowUcxBmf7hz3MY3I8MBqLIqT";
+
 
 
 export const fetchGameById = createAsyncThunk(
   "game/fetchById",
-  async (transactionId, { rejectWithValue }) => {
+  async (id, { rejectWithValue }) => {
     try {
-      // Fetch the created game using the transactionId
       const response = await fetch(
-        `https://z8q5dvew.api.sanity.io/v2021-06-07/data/query/production?query=*[_id=="${transactionId}"]`
+        `https://z8q5dvew.api.sanity.io/v2021-06-07/data/query/production`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${SANITY_API_TOKEN}`,
+          },
+          body: JSON.stringify({
+            query: "*[_type == 'game' && _id == $id][0]",
+            params: {
+              id: id
+            }
+          }
+          ),
+        }
       );
 
       const gameDataFromSanity = await response.json();
@@ -16,17 +31,15 @@ export const fetchGameById = createAsyncThunk(
         throw new Error('Failed to fetch game data');
       }
 
-      console.log("Fetched game data from Sanity:", gameDataFromSanity);
+      console.log("Fetched game data from Sanity:", gameDataFromSanity.result);
 
-      return gameDataFromSanity.result[0]; // Return the game data
+      return gameDataFromSanity.result; // Return the game data
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
 
-
-// Async thunk to create a new game
 export const createNewGame = createAsyncThunk(
   "game/create",
   async ({ playerId, playerName }, { dispatch, rejectWithValue }) => {
@@ -50,7 +63,7 @@ export const createNewGame = createAsyncThunk(
         status: "ongoing",
         startTime: new Date().toISOString(),
         currentTurn: 0,
-        players: [
+        allPlayers: [
           createPlayer(playerName, false, playerId),
           createPlayer("AI player 1", true),
           createPlayer("AI Player 2", true),
@@ -71,8 +84,7 @@ export const createNewGame = createAsyncThunk(
             status: "ongoing",
             startTime: new Date().toISOString(),
             currentTurn: 0,
-            players: gameData.players.map(player => ({
-              _type: "player", 
+            allPlayers: gameData.allPlayers.map((player) => ({
               id: player.id,
               name: player.name,
               balance: player.balance,
@@ -83,49 +95,45 @@ export const createNewGame = createAsyncThunk(
               assets: player.assets,
             })),
             gameLog: gameData.gameLog,
-          }
-        }
+          },
+
+        },
       ];
 
       // Simulate API call to save the game to the backend using fetch
-      const response = await fetch('https://z8q5dvew.api.sanity.io/v2021-06-07/data/mutate/production', {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer YOUR_SANITY_API_TOKEN`,  // Replace with your actual API token
-        },
-        body: JSON.stringify({ mutations }),
-      });
+      const response = await fetch(
+        "https://z8q5dvew.api.sanity.io/v2021-06-07/data/mutate/production?returnIds=true",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${SANITY_API_TOKEN}`, // Replace with your actual API token
+          },
+          body: JSON.stringify({ mutations }),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to create game');
+        throw new Error("Failed to create game");
       }
 
       // Get the transactionId from the response
       const responseData = await response.json();
-      const transactionId = responseData.transactionId;
-      console.log("Game created, transactionId:", transactionId);
+      const id = responseData.results[0].id;
+      console.log("Game created, transactionId:", id);
 
-      return transactionId; // Return the transactionId to fetch the game later
+      dispatch(fetchGameById(id)); // Fetch the game by its transactionId
+
+      return id;
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
 
-// Async thunk to fetch game data by transactionId
-
 // Initial state based on schema
 const initialState = {
-  gameId: "",
-  status: "ongoing", // Default status is ongoing
-  startTime: "",
-  endTime: null,
-  currentTurn: 0,
-  players: [],
-  gameLog: [],
-  error: null,
-  currentAction: null,
+  game: {}, error: null
 };
 
 const gameSlice = createSlice({
@@ -134,15 +142,7 @@ const gameSlice = createSlice({
   reducers: {
     startGame: (state, action) => {
       // This action is called after fetching the game data
-      const { gameId, status, startTime, players, gameLog, currentTurn } = action.payload;
-
-      state.gameId = gameId;
-      state.status = status;
-      state.startTime = startTime;
-      state.players = players;
-      state.gameLog = gameLog;
-      state.currentTurn = currentTurn;
-      state.currentAction = `${players[0].name}'s turn!`;
+      state.game = action.payload
     },
 
     rollDice: (state) => {
@@ -150,7 +150,9 @@ const gameSlice = createSlice({
       const diceRoll = Math.ceil(Math.random() * 6) + Math.ceil(Math.random() * 6);
 
       currentPlayer.position = (currentPlayer.position + diceRoll) % 40;
-      state.gameLog.push(`${currentPlayer.name} rolled a ${diceRoll} and moved to position ${currentPlayer.position}`);
+      state.gameLog.push(
+        `${currentPlayer.name} rolled a ${diceRoll} and moved to position ${currentPlayer.position}`
+      );
       state.currentAction = `${currentPlayer.name} rolled a ${diceRoll}`;
     },
 
@@ -183,7 +185,8 @@ const gameSlice = createSlice({
       })
       .addCase(fetchGameById.fulfilled, (state, action) => {
         console.log("Game fetched successfully:", action.payload);
-        dispatch(gameSlice.actions.startGame(action.payload)); // Start the game with fetched data
+        // Start the game with the fetched data
+        state.game = action.payload
       })
       .addCase(fetchGameById.rejected, (state, action) => {
         state.error = action.payload;

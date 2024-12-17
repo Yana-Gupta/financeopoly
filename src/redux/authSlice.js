@@ -62,11 +62,12 @@ export const getAllGames = createAsyncThunk(
             Authorization: `Bearer sk8oSSjaJahz6F2E93Gm2WVsqHEJubfdWT8YvAZQ2kLDLUFhHz3fHM6xaB8Q72BKmZxkPTSKE3Ec7RBDymlTI01XwKsBhatu8qnZTCcjWteUHJLQD1kos890V2cG76yFgKxcGwrXZeBVdo5e0XuLHRLclVHXowUcxBmf7hz3MY3I8MBqLIqT`,
           },
           body: JSON.stringify({
-            query: "*[_type == 'game' && humanPlayers match $playerId]",
+            query: `*[_type == "game" && humanPlayer._ref == $playerId]`,
             params: { playerId },
           }),
         }
       );
+
 
       const data = await response.json();
 

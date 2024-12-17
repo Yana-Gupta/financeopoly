@@ -9,8 +9,7 @@ import Layout from "./components/Layout.jsx";
 import Game from "./pages/Games.jsx";
 import ErrorComponent from "./components/Error.jsx";
 import GameSummary from "./pages/GameSummary.jsx";
-import dotenv from 'dotenv';
-
+import Home from "./pages/Home.jsx";
 
 const appRouter = createBrowserRouter([
   {
@@ -19,7 +18,7 @@ const appRouter = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <App />,
+        element: <Home />,
       },
       {
         path: "/game",
@@ -34,7 +33,6 @@ const appRouter = createBrowserRouter([
   },
 ]);
 
-dotenv.config();
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

@@ -26,7 +26,7 @@ const Layout = ({ children }) => {
 
       {/* Footer (optional, you can customize it further) */}
 
-      <footer>
+      <footer className="bg-black bottom-0 fixed h-10 w-full">
         <p>© 2024 My Game App</p>
       </footer>
     </div>
