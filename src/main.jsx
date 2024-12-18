@@ -28,6 +28,10 @@ const appRouter = createBrowserRouter([
         path: "/game/summary/:id",
         element: <GameSummary />,
       },
+      {
+        path: "/definition/:term",
+        element: <Game />
+      }
     ],
     errorElement: <ErrorComponent />,
   },

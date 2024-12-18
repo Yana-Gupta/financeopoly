@@ -266,7 +266,7 @@
 }
 .frame > div.corner div span {
   display: block;
-  font-size: 30px;
+  font-size: 27px;
 }
 .frame > div.corner.tl {
   border-radius: 8px 1px 4px 1px;

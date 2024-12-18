@@ -23,12 +23,6 @@ const Layout = ({ children }) => {
       <div className="w-full h-[80vh]">
         <Outlet />
       </div>
-
-      {/* Footer (optional, you can customize it further) */}
-
-      <footer className="bg-black bottom-0 fixed h-10 w-full">
-        <p>© 2024 My Game App</p>
-      </footer>
     </div>
   )
 }

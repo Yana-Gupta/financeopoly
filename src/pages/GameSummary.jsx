@@ -3,8 +3,17 @@ import "./style.css"
 import React, { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { TilesData } from "../utils/GameData"
+import { AllTilesData } from "../utils/AllTilesData"
 import { useParams } from "react-router-dom"
 import { fetchGameById } from "../redux/gameSlice"
+import {
+  startGame,
+  rollDice,
+  endTurn,
+  resetGame,
+  endGame,
+  updateGameInSanity,
+} from "../redux/gameSlice"
 
 const GameSummary = () => {
   const [tableState, setTableState] = React.useState("stop")
@@ -22,16 +31,36 @@ const GameSummary = () => {
     if (tableState === "stop") {
       setTableState("start")
       setTimeout(() => setTableState("rotation"), 2000)
+      document.getElementById("game-stat").style.display = "none"
+      document.getElementById("game-log").style.display = "none"
     } else {
       setTableState("hide")
       setTimeout(() => setTableState("stop"), 2000)
+      document.getElementById("game-stat").style.display = "block"
+      document.getElementById("game-log").style.display = "block"
     }
+  }
+  const handleDiceRoll = () => {
+    const diceRoll = Math.ceil(Math.random() * 6) + Math.ceil(Math.random() * 6)
+
+    dispatch(rollDice({ diceRoll, AllTilesData }))
+
+    dispatch(updateGameInSanity())
+      .then(() => {
+        console.log("Game state successfully synced with Sanity")
+      })
+      .catch((error) => {
+        console.error("Error syncing game state with Sanity:", error)
+      })
   }
 
   return (
     <div className="gameBoard">
       {/* Game Logs */}
-      <div className="absolute left-8 top-[20%] py-2 px-4 w-[350px] border-4 rounded-lg border-red-700 bg-white shadow-lg">
+      <div
+        className="absolute left-8 top-[20%] py-2 px-4 w-[300px] border-4 rounded-lg border-red-700 bg-white shadow-lg"
+        id="game-log"
+      >
         <h1 className="text-2xl font-semibold mb-2">Game Logs</h1>
         <div className="max-h-[300px] overflow-y-auto space-y-2">
           {game?.gameLog?.length > 0 ? (
@@ -51,7 +80,15 @@ const GameSummary = () => {
         </div>
       </div>
 
-      {/* Game Board */}
+      <div className="absolute top-10 left-8">
+          <button
+            onClick={handleDiceRoll}
+            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+          >
+            Roll Dice 🎲
+          </button>
+      </div>
+
       <div className={`table ${tableState}`} onClick={toggleTable}>
         <div className="frame">
           <div className="corner tl" style={{ "--order": 1 }}>
@@ -98,10 +135,13 @@ const GameSummary = () => {
         </div>
       </div>
 
-      <div className="absolute right-20 top-[20%] py-2 px-4 w-[350px] border-4 rounded-lg border-blue-700 bg-white shadow-lg">
+      <div
+        className="absolute right-8 top-[20%] py-2 px-4 w-[300px] border-4 rounded-lg border-blue-700 bg-white shadow-lg"
+        id="game-stat"
+      >
         <h1 className="text-2xl font-semibold mb-2">Game Stats</h1>
         <div className="max-h-[300px] overflow-y-auto">
-          {game?.allPlayers?.length > 0 ? (
+          {game && game?.allPlayers?.length > 0 ? (
             game.allPlayers.map((player, index) => (
               <div
                 key={index}
