@@ -14,13 +14,13 @@ const Layout = ({ children }) => {
   }, [dispatch])
 
   return (
-    <div className="layout">
+    <div className="layout w-full h-screen flex flex-col">
       {/* Navbar */}
-      <div className="w-full">
+      <div className="h-28 w-full bg-orange-400">
         <Navbar />
       </div>
 
-      <div className="w-full h-[80vh]">
+      <div className="w-full flex-grow">
         <Outlet />
       </div>
     </div>

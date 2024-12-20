@@ -31,7 +31,8 @@ const appRouter = createBrowserRouter([
       {
         path: "/definition/:term",
         element: <Game />
-      }
+      },
+    
     ],
     errorElement: <ErrorComponent />,
   },

@@ -27,25 +27,30 @@ const Navbar = () => {
       dispatch(googlePlayerSignIn(userData))
       console.log("User logged in and saved successfully")
     } catch (error) {
-      console.error("")
+      console.error("Error during login:", error)
     }
   }
 
-  console.log(player)
+  const handleError = () => {
+    console.error("Google login failed.")
+  }
 
-  const handleError = () => {}
   return (
-    <div className="h-20 w-full bg-cyan-700 flex flex-row text-center items-center justify-between px-12">
-      <div className="text-3xl font-bold">Financeopoly</div>
+    <div className="h-28 w-full bg-gradient-to-r from-orange-500 to-orange-600 flex flex-row items-center justify-between px-6 lg:px-20 font-nunito-sans">
+      <div className="text-4xl font-bold hover:text-orange-950 text-orange-900 transition">
+        <p className="font-extrabold">Financeopoly</p>
+      </div>
 
-      <div className="flex flex-row gap-x-8 justify-between items-center">
-        <div>Gaming Center</div>
+      <div className="flex items-center gap-x-24">
+        <div className="font-semibold text-xl lg:text-2xl text-gray-300 ">Gaming Center</div>
 
         <div className="text-xl px-2 py-1">
-          {(player !== null) ? (
-            <div>
-              <img src={player.profilePic} alt={player.name} className="h-12 w-12 rounded-full" />
-            </div>
+          {player ? (
+            <img
+              src={player?.profilePic}
+              alt={player?.name || "User"}
+              className="h-14 w-14 rounded-full border border-white hover:shadow-lg transition"
+            />
           ) : (
             <GoogleOAuthProvider clientId={CLIENT_ID}>
               <GoogleLogin

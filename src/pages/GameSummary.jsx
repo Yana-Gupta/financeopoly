@@ -5,15 +5,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { TilesData } from "../utils/GameData"
 import { AllTilesData } from "../utils/AllTilesData"
 import { useParams } from "react-router-dom"
-import { fetchGameById } from "../redux/gameSlice"
-import {
-  startGame,
-  rollDice,
-  endTurn,
-  resetGame,
-  endGame,
-  updateGameInSanity,
-} from "../redux/gameSlice"
+import { rollDice, fetchGameById, updateGameInSanity, rollDiceAsync } from "../redux/gameSlice"
 
 const GameSummary = () => {
   const [tableState, setTableState] = React.useState("stop")
@@ -43,8 +35,9 @@ const GameSummary = () => {
   const handleDiceRoll = () => {
     const diceRoll = Math.ceil(Math.random() * 6) + Math.ceil(Math.random() * 6)
 
-    dispatch(rollDice({ diceRoll, AllTilesData }))
+    // dispatch(rollDice({ diceRoll, AllTilesData, game }))
 
+    dispatch(rollDiceAsync({ diceRoll, AllTilesData, game}))
     dispatch(updateGameInSanity())
       .then(() => {
         console.log("Game state successfully synced with Sanity")
@@ -81,12 +74,12 @@ const GameSummary = () => {
       </div>
 
       <div className="absolute top-10 left-8">
-          <button
-            onClick={handleDiceRoll}
-            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-          >
-            Roll Dice 🎲
-          </button>
+        <button
+          onClick={handleDiceRoll}
+          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+        >
+          Roll Dice 🎲
+        </button>
       </div>
 
       <div className={`table ${tableState}`} onClick={toggleTable}>
