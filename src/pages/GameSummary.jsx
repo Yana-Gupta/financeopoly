@@ -5,12 +5,19 @@ import { useDispatch, useSelector } from "react-redux"
 import { TilesData } from "../utils/GameData"
 import { AllTilesData } from "../utils/AllTilesData"
 import { useParams } from "react-router-dom"
-import { rollDice, fetchGameById, updateGameInSanity, rollDiceAsync } from "../redux/gameSlice"
+import {
+  rollDice,
+  handleAIPropertyPurchase,
+  gamePlaying,
+  gameNotPlaying,
+} from "../redux/gameSlice"
+
+import { fetchGameById, updateGameInSanity } from "../redux/actions/gameAction"
 
 const GameSummary = () => {
   const [tableState, setTableState] = React.useState("stop")
 
-  const { game, error } = useSelector((state) => state.game)
+  const { game, error, playing } = useSelector((state) => state.game)
 
   const dispatch = useDispatch()
   const { id } = useParams()
@@ -32,12 +39,29 @@ const GameSummary = () => {
       document.getElementById("game-log").style.display = "block"
     }
   }
+
   const handleDiceRoll = () => {
+
+    console.log(playing)
+    dispatch(gamePlaying())
     const diceRoll = Math.ceil(Math.random() * 6) + Math.ceil(Math.random() * 6)
 
-    // dispatch(rollDice({ diceRoll, AllTilesData, game }))
+    dispatch(rollDice({ diceRoll, AllTilesData, game }))
 
-    dispatch(rollDiceAsync({ diceRoll, AllTilesData, game}))
+    const currentPlayer = game.allPlayers[game.currentTurn]
+    const currentTile = AllTilesData.List[currentPlayer.position]
+    const propertyData = game.initialProperties[currentTile.TilesDataIndex]
+
+    if (propertyData && propertyData.ownerId === null && currentPlayer.isAI) {
+      dispatch(
+        handleAIPropertyPurchase({
+          currentPlayer,
+          propertyData,
+          gameState: game,
+        })
+      )
+    }
+
     dispatch(updateGameInSanity())
       .then(() => {
         console.log("Game state successfully synced with Sanity")
@@ -45,6 +69,8 @@ const GameSummary = () => {
       .catch((error) => {
         console.error("Error syncing game state with Sanity:", error)
       })
+
+    dispatch(gameNotPlaying())
   }
 
   return (
@@ -75,6 +101,7 @@ const GameSummary = () => {
 
       <div className="absolute top-10 left-8">
         <button
+          disabled={playing}
           onClick={handleDiceRoll}
           className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
         >

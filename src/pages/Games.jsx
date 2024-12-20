@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { getAllGames } from "../redux/authSlice";
-import { createNewGame } from "../redux/gameSlice";
+import { createNewGame } from "../redux/actions/gameAction";
 import { useNavigate } from "react-router-dom";
 
 import PlusIcon from "../assets/svg/PlusIcon";
