@@ -10,9 +10,12 @@ import {
   handleAIPropertyPurchase,
   gamePlaying,
   gameNotPlaying,
+  endTurn,
 } from "../redux/gameSlice"
 
 import { fetchGameById, updateGameInSanity } from "../redux/actions/gameAction"
+
+const playerColors = ["#e74c3c", "#3498db", "#2ecc71", "#f1c40f"]
 
 const GameSummary = () => {
   const [tableState, setTableState] = React.useState("stop")
@@ -41,26 +44,34 @@ const GameSummary = () => {
   }
 
   const handleDiceRoll = () => {
-
-    console.log(playing)
     dispatch(gamePlaying())
     const diceRoll = Math.ceil(Math.random() * 6) + Math.ceil(Math.random() * 6)
+
+    console.log(game.currentTurn)
 
     dispatch(rollDice({ diceRoll, AllTilesData, game }))
 
     const currentPlayer = game.allPlayers[game.currentTurn]
     const currentTile = AllTilesData.List[currentPlayer.position]
-    const propertyData = game.initialProperties[currentTile.TilesDataIndex]
 
-    if (propertyData && propertyData.ownerId === null && currentPlayer.isAI) {
-      dispatch(
-        handleAIPropertyPurchase({
-          currentPlayer,
-          propertyData,
-          gameState: game,
-        })
-      )
+    if (currentTile.TilesDataIndex !== null && currentPlayer.isAI) {
+
+      const propertyData = game.initialProperties[currentTile.TilesDataIndex]
+      console.log(game.initialProperties , game.initialProperties[currentTile.TilesDataIndex], currentTile.TilesDataIndex, currentTile)
+      console.log(propertyData)
+      if (propertyData.ownerId === null) {
+        console.log("there is an ai buying ")
+        dispatch(
+          handleAIPropertyPurchase({
+            currentPlayer,
+            propertyData,
+            gameState: game,
+          })
+        )
+      }
     }
+
+    dispatch(endTurn())
 
     dispatch(updateGameInSanity())
       .then(() => {
@@ -72,6 +83,7 @@ const GameSummary = () => {
 
     dispatch(gameNotPlaying())
   }
+  console.log(game)
 
   return (
     <div className="gameBoard">
@@ -115,16 +127,64 @@ const GameSummary = () => {
             <div>
               free <span>🅿️</span> parking
             </div>
+            {game?.allPlayers?.map((player, index) => {
+              if (AllTilesData.List[player.position].order == 1) {
+                return (
+                  <span
+                    className="text-white flex flex-row items-center justify-center rounded-md -top-4"
+                    style={{
+                      fontSize: "16px",
+                      backgroundColor: playerColors[index],
+                      padding: "2px 2px",
+                    }}
+                  >
+                    {player.name}
+                  </span>
+                )
+              } else return ""
+            })}
           </div>
           <div className="corner tr" style={{ "--order": 11 }}>
             <div>
               go to <span>👮</span> jail
             </div>
+            {game?.allPlayers?.map((player, index) => {
+              if (AllTilesData.List[player.position].order == 1) {
+                return (
+                  <span
+                    className="text-white flex flex-row items-center justify-center rounded-md -top-4"
+                    style={{
+                      fontSize: "16px",
+                      backgroundColor: playerColors[index],
+                      padding: "2px 2px",
+                    }}
+                  >
+                    {player.name}
+                  </span>
+                )
+              } else return <div> </div>
+            })}
           </div>
           <div className="corner bl" style={{ "--order": 31 }}>
             <div>
               in <span>🗝</span> jail
             </div>
+            {game?.allPlayers?.map((player, index) => {
+              if (AllTilesData.List[player.position].order == 31)
+                return (
+                  <span
+                    className="text-white flex flex-row items-center justify-center rounded-md -top-4"
+                    style={{
+                      fontSize: "16px",
+                      backgroundColor: playerColors[index],
+                      padding: "2px 2px",
+                    }}
+                  >
+                    {player.name}
+                  </span>
+                )
+              else return ""
+            })}
           </div>
           <div className="corner br" style={{ "--order": 41 }}>
             <div>
@@ -133,6 +193,22 @@ const GameSummary = () => {
               </em>{" "}
               go <span>↖️</span>
             </div>
+            {game?.allPlayers?.map((player, index) => {
+              if (AllTilesData.List[player.position].order == 41)
+                return (
+                  <span
+                    className="text-white flex flex-row items-center justify-center rounded-md relative -top-4"
+                    style={{
+                      fontSize: "16px",
+                      backgroundColor: playerColors[index],
+                      padding: "2px 2px",
+                    }}
+                  >
+                    {player.name}
+                  </span>
+                )
+              else return ""
+            })}
           </div>
           <div className="center" style={{ "--order": 13 }}>
             <div className="logo">Financopoly</div>
@@ -149,6 +225,24 @@ const GameSummary = () => {
                 <h2>{tile.label}</h2>
                 <span>{tile.icon}</span>
                 <strong>{tile.price}</strong>
+
+                {/* Player markers */}
+                {game?.allPlayers?.map((player, index) => {
+                  if (AllTilesData.List[player.position].order == tile.order)
+                    return (
+                      <span
+                        className="text-white flex flex-row items-center justify-center rounded-md -top-4"
+                        style={{
+                          fontSize: "12px",
+                          backgroundColor: playerColors[index],
+                          padding: "2px 2px",
+                        }}
+                      >
+                        {player.name}
+                      </span>
+                    )
+                  else return ""
+                })}
               </div>
             </div>
           ))}

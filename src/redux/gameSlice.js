@@ -96,7 +96,10 @@ const gameSlice = createSlice({
 
       const tileLabel = currentTile.label.toLowerCase();
 
-      if (tileLabel.includes("go to jail")) {
+      if ( tileLabel.toLowerCase() == "go" ) {
+        
+      }
+      else if (tileLabel.includes("go to jail")) {
         currentPlayer.inJail = true;
         state.game.gameLog.push(`${currentPlayer.name} was sent to jail.`);
         state.game.currentAction = `${currentPlayer.name} landed on "Go to Jail" and was sent to jail.`;
@@ -168,10 +171,9 @@ const gameSlice = createSlice({
       } else {
         state.game.currentAction = `${currentPlayer.name} landed on ${currentTile.label}.`;
       }
-
-      state.game.currentTurn = (state.game.currentTurn + 1) % state.game.allPlayers.length;
     },
     endTurn: (state) => {
+      console.log("Inside end turn")
       const currentPlayer = state.game.allPlayers[state.game.currentTurn];
       state.game.gameLog.push(`${currentPlayer.name} ended their turn.`);
 
@@ -187,8 +189,8 @@ const gameSlice = createSlice({
     },
     updateGameState: (state, action) => {
       const { log, gameState } = action.payload;
-      state.game = gameState;  // Update the entire game state if necessary
-      state.game.gameLog.push(log);  // Append the log message
+      state.game = gameState;  
+      state.game.gameLog.push(log);
     },
     gamePlaying: (state) => {
       state.playing = true;

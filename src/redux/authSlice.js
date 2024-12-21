@@ -92,7 +92,6 @@ const initialState = {
   games: [],
 };
 
-// Reducer slice
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -112,7 +111,8 @@ const authSlice = createSlice({
     logout: (state) => {
       state.player = null;
       state.error = null;
-      state.games = []; // Clear games on logout
+      state.games = [];
+      localStorage.removeItem("playerId")
     },
     setGames: (state, action) => {
       state.games = action.payload;

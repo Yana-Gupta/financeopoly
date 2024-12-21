@@ -15,8 +15,8 @@ const Home = () => {
   return (
     <div className="overflow-hidden w-full h-full bg-gradient-to-r from-orange-500 to-orange-600">
       <div className="w-full h-full bg-transparent flex flex-col lg:flex-row items-center justify-between px-20 relative">
-        <div className="z-10 flex flex-col gap-6 gap-y-12 w-full justify-center h-full lg:w-3/4">
-          <h1 className="tracking-wide text-2xl md:text-3xl lg:text-5xl xl:text-6xl font-bold text-orange-800 font-nunito-sans max-w-[900px]">
+        <div className="z-10 flex flex-col gap-6 gap-y-12 w-full justify-center h-full lg:w-3/4 relative hover:-translate-y-4 transition-transform duration-300 ease-linear">
+          <h1 className="tracking-wide text-2xl md:text-3xl lg:text-5xl xl:text-6xl font-bold text-orange-800 font-nunito-sans max-w-[900px] transition-all duration-300 ease-in-out hover:scale-105">
             {textLines.map((line) => {
               return (
                 <p key={line}>
@@ -69,7 +69,7 @@ const Home = () => {
 
           <img
             src={HeroImage}
-            className="transform rotate-12 w-full h-auto object-cover opacity-40 transition-all duration-300 hover:scale-110 hover:rotate-6 hover:opacity-65"
+            className="transform rotate-12 w-full h-auto object-cover opacity-40 transition-all duration-300 hover:scale-105 hover:rotate-6 hover:opacity-65"
           />
         </div>
       </div>

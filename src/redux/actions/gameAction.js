@@ -187,7 +187,6 @@ export const createNewGame = createAsyncThunk(
                 },
             };
 
-            // Send the mutations to Sanity API
             const response = await fetch(
                 "https://z8q5dvew.api.sanity.io/v2021-06-07/data/mutate/production?returnIds=true",
                 {
