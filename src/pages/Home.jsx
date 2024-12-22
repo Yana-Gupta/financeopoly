@@ -13,7 +13,7 @@ const Home = () => {
   const navigate = useNavigate()
 
   return (
-    <div className="overflow-hidden w-full h-full bg-gradient-to-r from-orange-500 to-orange-600">
+    <div className="overflow-hidden w-full h-full bg-gradient-to-r from-orange-500 to-orange-600 ">
       <div className="w-full h-full bg-transparent flex flex-col lg:flex-row items-center justify-between px-20 relative">
         <div className="z-10 flex flex-col gap-6 gap-y-12 w-full justify-center h-full lg:w-3/4 relative hover:-translate-y-4 transition-transform duration-300 ease-linear">
           <h1 className="tracking-wide text-2xl md:text-3xl lg:text-5xl xl:text-6xl font-bold text-orange-800 font-nunito-sans max-w-[900px] transition-all duration-300 ease-in-out hover:scale-105">

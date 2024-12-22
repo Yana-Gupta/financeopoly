@@ -7,67 +7,6 @@ const initialState = {
   loading: false,
   playing: false,
 };
-export const handleAIPropertyPurchase = createAsyncThunk(
-  'game/handleAIPropertyPurchase',
-  async (data, { getState, dispatch }) => {
-    dispatch(gamePlaying());
-    const { currentPlayer, propertyData, gameState } = data;
-
-    console.log(currentPlayer, propertyData, gameState);
-    try {
-      await AIPLayerAction(currentPlayer, propertyData, gameState.allPlayers)
-        .then(response => {
-          if (response.toLowerCase() === "buy") {
-            const updatedPlayer = {
-              ...currentPlayer,
-              balance: currentPlayer.balance - propertyData.price,
-              properties: [...(currentPlayer.properties || []), { ...propertyData, ownerId: gameState.currentTurn }],
-            };
-            const updatedGameState = {
-              ...gameState,
-              allPlayers: gameState.allPlayers.map(player =>
-                player.id === currentPlayer.id ? updatedPlayer : player
-              ),
-              gameLog: [
-                ...gameState.gameLog,
-                `${updatedPlayer.name} bought the property ${propertyData.name} for ${propertyData.price} $.`
-              ]
-            };
-
-            // Dispatch the updated game state
-            dispatch(updateGameState({
-              log: `${updatedPlayer.name} bought the property ${propertyData.name} for ${propertyData.price} $.`,
-              gameState: updatedGameState
-            }));
-
-          } else {
-            const updatedGameState = {
-              ...gameState,
-              gameLog: [
-                ...gameState.gameLog,
-                `${currentPlayer.name} decided not to buy ${propertyData.name}.`
-              ]
-            };
-            dispatch(updateGameState({
-              log: `${currentPlayer.name} decided not to buy ${propertyData.name}.`,
-              gameState: updatedGameState
-            }));
-
-          }
-        }
-        )
-    } catch (error) {
-      console.error("API call failed:", error);
-      const updatedGameState = {
-        ...gameState,
-      };
-      dispatch(updateGameState({
-        log: "AI failed to make a property purchase decision.",
-        gameState: updatedGameState
-      }));
-    }
-  }
-);
 
 const gameSlice = createSlice({
   name: "game",
@@ -153,6 +92,9 @@ const gameSlice = createSlice({
                 };
 
                 currentPlayer.properties = [...(currentPlayer.properties || []), updatedProperty];
+
+                console.log(updatedProperty)
+                console.log("This is updated property")
                 state.game.gameLog.push(`${currentPlayer.name} bought the property ${propertyData.name} for ${propertyData.price} $.`);
 
                 state.game.initialProperties[currentTile.TilesDataIndex] = updatedProperty;

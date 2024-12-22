@@ -44,7 +44,7 @@ const Navbar = () => {
 
   return (
     <div className="h-28 w-full bg-gradient-to-r from-orange-500 to-orange-600 flex flex-row items-center justify-between px-6 lg:px-20 font-nunito-sans">
-      <div className="text-4xl font-bold hover:text-orange-950 text-orange-900 transition">
+      <div className="text-4xl font-bold hover:text-orange-950 text-orange-900 transition ease-in-out scale-105">
         <p className="font-extrabold">Financeopoly</p>
       </div>
 

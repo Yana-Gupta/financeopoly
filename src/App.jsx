@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux"
 import Navbar from "./components/Navbar"
 import { fetchPlayerById } from "./redux/authSlice"
 import { Outlet } from "react-router-dom"
+import "./App.css"
 
 const Layout = ({ children }) => {
   const dispatch = useDispatch()

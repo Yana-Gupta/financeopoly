@@ -68,8 +68,10 @@ Please respond with one action, one word:
             })
         });
 
+        
         const data = await response.json();
-        return data?.choices[0]?.message?.content;
+        if ( data.statusCode === 200 ) return data?.choices[0]?.message?.content;
+        else return "buy"
     } catch (error) {
         console.error(error)
         return "buy"
@@ -229,6 +231,7 @@ export const updateGameInSanity = createAsyncThunk(
                             "allPlayers": game.allPlayers,
                             "gameLog": game.gameLog,
                             "currentTurn": game.currentTurn,
+                            "initialProperties": game.initialProperties,
                         },
                     },
                 },
@@ -259,6 +262,68 @@ export const updateGameInSanity = createAsyncThunk(
         }
     }
 );
+
+export const handleAIPropertyPurchase = createAsyncThunk(
+    'game/handleAIPropertyPurchase',
+    async (data, { getState, dispatch }) => {
+      dispatch(gamePlaying());
+      const { currentPlayer, propertyData, gameState, diceRoll } = data;
+  
+      console.log(currentPlayer, propertyData, gameState);
+      try {
+        await AIPLayerAction(currentPlayer, propertyData, gameState.allPlayers)
+          .then(response => {
+            if (response.toLowerCase() === "buy") {
+              const updatedPlayer = {
+                ...currentPlayer,
+                position: (currentPlayer.position + diceRoll)%40, 
+                balance: currentPlayer.balance - propertyData.price,
+                properties: [...(currentPlayer.properties || []), { ...propertyData, ownerId: gameState.currentTurn }],
+              };
+              const updatedGameState = {
+                ...gameState,
+                allPlayers: gameState.allPlayers.map(player =>
+                  player.id === currentPlayer.id ? updatedPlayer : player
+                ),
+                gameLog: [
+                  ...gameState.gameLog,
+                  `${updatedPlayer.name} bought the property ${propertyData.name} for ${propertyData.price} $.`
+                ]
+              };
+  
+              dispatch(updateGameState({
+                log: `${updatedPlayer.name} bought the property ${propertyData.name} for ${propertyData.price} $.`,
+                gameState: updatedGameState
+              }));
+  
+            } else {
+              const updatedGameState = {
+                ...gameState,
+                gameLog: [
+                  ...gameState.gameLog,
+                  `${currentPlayer.name} decided not to buy ${propertyData.name}.`
+                ]
+              };
+              dispatch(updateGameState({
+                log: `${currentPlayer.name} decided not to buy ${propertyData.name}.`,
+                gameState: updatedGameState
+              }));
+  
+            }
+          }
+          )
+      } catch (error) {
+        console.error("API call failed:", error);
+        const updatedGameState = {
+          ...gameState,
+        };
+        dispatch(updateGameState({
+          log: "AI failed to make a property purchase decision.",
+          gameState: updatedGameState
+        }));
+      }
+    }
+  );
 
 
 export { AIPLayerAction, showHumanPlayerPrompt };
