@@ -5,7 +5,8 @@ import { useState } from "react"
 import { logout } from "../redux/authSlice"
 
 const CLIENT_ID =
-  "162458700878-a8e200u370isgaonemsl27pbcef20jdv.apps.googleusercontent.com"
+  "249633831566-aei05d8cg0eq45ns5lrj7b9bibhrduhd.apps.googleusercontent.com"
+
 
 const Navbar = () => {
   const dispatch = useDispatch()
