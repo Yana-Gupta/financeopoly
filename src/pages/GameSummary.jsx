@@ -21,7 +21,7 @@ const playerColors = ["#e74c3c", "#3498db", "#2ecc71", "#f1c40f"]
 const GameSummary = () => {
   const [tableState, setTableState] = React.useState("stop")
 
-  const { game, error, playing, loading } = useSelector((state) => state.game)
+  const { game, playing, loading } = useSelector((state) => state.game)
 
   const dispatch = useDispatch()
   const { id } = useParams()
@@ -134,7 +134,7 @@ const GameSummary = () => {
 
         <div className={`table ${tableState}`} onClick={toggleTable}>
           <div className="frame">
-            <div className="corner tl" style={{ "--order": 1 }}>
+            <div className="corner tile tl" style={{ "--order": 1 }}>
               <div>
                 free <span>🅿️</span> parking
               </div>
@@ -155,7 +155,7 @@ const GameSummary = () => {
                 } else return ""
               })}
             </div>
-            <div className="corner tr" style={{ "--order": 11 }}>
+            <div className="corner tile tr" style={{ "--order": 11 }}>
               <div>
                 go to <span>👮</span> jail
               </div>
@@ -197,7 +197,7 @@ const GameSummary = () => {
                 else return ""
               })}
             </div>
-            <div className="corner br" style={{ "--order": 41 }}>
+            <div className="corner tile br" style={{ "--order": 41 }}>
               <div>
                 <em>
                   collect <br /> £200 salary as you pass
@@ -229,7 +229,7 @@ const GameSummary = () => {
             {TilesData.List.map((tile, index) => (
               <div
                 key={index}
-                className={`tile ${tile.pos} ${tile.color} bg-orange-300`}
+                className={`tile ${tile.pos} ${tile.color} tile`}
                 style={{ "--order": tile.order }}
               >
                 <div className="inside">
@@ -286,6 +286,8 @@ const GameSummary = () => {
               <p>No player stats available.</p>
             )}
           </div>
+
+          <div className="absolute bottom-8 "></div>
         </div>
       </div>
     )

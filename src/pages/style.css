@@ -106,7 +106,15 @@
   /* scale: 130%; */
   z-index: 100;
 }
+.tile {
+  transition: transform 0.3s ease, z-index 0.3s ease; /* Smooth scale-up */
 
+}
+
+.tile :hover {
+  z-index: 100;
+  scale: 200%;
+}
 
 .frame > div .inside {
   position: absolute;
